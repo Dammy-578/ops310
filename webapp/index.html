@@ -1,1 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>upload file here</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        form {
+            margin: auto;
+            max-width: 400px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        input[type="file"], button {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>upload file here</h1>
+    <form id="uploadForm">
+        <input type="file" id="fileInput" required />
+        <button type="submit">Upload File</button>
+    </form>
+    <p id="status"></p>
+    <script>
+        const form = document.getElementById('uploadForm');
+        const status = document.getElementById('status');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            status.textContent = 'Uploading...';
+
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                status.textContent = 'No file selected!';
+                return;
+            }
+            const sasToken = "sp=racw&st=2024-12-08T05:31:40Z&se=2024-12-17T13:31:40Z&sv=2022-11-02&sr=c&sig=4lQYsCnyqisLkws0e4V2gEkhruwywna7%2BZbfRsi%2BmiU%3D";
+            const containerUrl = "https://ops310prj2oogundipe3.blob.core.windows.net/incoming-files";
+
+            const uploadUrl = `${containerUrl}/${file.name}?${sasToken}`;
+           
+            try {
+                const response = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'x-ms-blob-type': 'BlockBlob',
+                        'Content-Type': file.type,
+                    },
+                    body: file,
+                });
+           
+
+                if (response.ok) {
+                    status.textContent = 'File uploaded successfully!';
+                } else {
+                    status.textContent = 'Upload failed!';
+                }
+            } catch (error) {
+                status.textContent = 'Error uploading file.';
+            }
+        });
+    </script>
+</body>
+</html>
 
